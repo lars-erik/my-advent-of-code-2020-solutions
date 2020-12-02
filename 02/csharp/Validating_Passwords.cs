@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 
 namespace day2 {
+    // ReSharper disable IdentifierTypo
     [TestFixture]
     public class Validating_Passwords
     {
@@ -15,6 +16,24 @@ namespace day2 {
         {
             bool isValid = Validate(input, SledRentalPolicy);
             Assert.That(isValid, Is.EqualTo(expectedValidity));
+        }
+
+        [Test]
+        public void Counts_Valid_SledRental_Passwords()
+        {
+            var valid = input
+                .Count(ValidateSledRentalPolicy);
+
+            Assert.That(valid, Is.EqualTo(524));
+        }
+
+        [Test]
+        public void Counts_Valid_ToboganCorporate_Passwords()
+        {
+            var valid = input
+                .Count(ValidToboganCorporatePolicy);
+
+            Assert.That(valid, Is.EqualTo(485));
         }
 
         string[] input;
@@ -31,32 +50,12 @@ namespace day2 {
                 .ToArray();
         }
 
-        [Test]
-        public void Counts_Valid_SledRental_Passwords()
-        {
-            var valid = input
-                .Select(ValidateSledRentalPolicy)
-                .Count(x => x);
-
-            Assert.That(valid, Is.EqualTo(524));
-        }
-
-        [Test]
-        public void Counts_Valid_ToboganCorporate_Passwords()
-        {
-            var valid = input
-                .Select(ValidateToboganCorporatePolicy)
-                .Count(x => x);
-
-            Assert.That(valid, Is.EqualTo(485));
-        }
-
         private static bool ValidateSledRentalPolicy(string record)
         {
             return Validate(record, SledRentalPolicy);
         }
 
-        private static bool ValidateToboganCorporatePolicy(string record)
+        private static bool ValidToboganCorporatePolicy(string record)
         {
             return Validate(record, ToboganCorporatePolicy);
         }

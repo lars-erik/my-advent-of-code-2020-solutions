@@ -65,7 +65,7 @@ namespace day1
         [Test]
         public void Need_Product_Of_2020_LINQ()
         {
-            var output = (
+            var qry = (
                 from x in input
                 from y in input
                 from z in input
@@ -73,8 +73,9 @@ namespace day1
                     x + y + z == 2020
                 select
                     x * y * z
-                )
-                .First();
+            );
+            Console.WriteLine(qry);
+            var output = qry.First();
 
             Assert.That(output, Is.EqualTo(244300320));
         }
