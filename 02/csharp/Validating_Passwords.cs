@@ -22,7 +22,7 @@ namespace day2 {
         public void Counts_Valid_SledRental_Passwords()
         {
             var valid = input
-                .Count(ValidateSledRentalPolicy);
+                .Count(ValidSledRentalPolicy);
 
             Assert.That(valid, Is.EqualTo(524));
         }
@@ -50,7 +50,7 @@ namespace day2 {
                 .ToArray();
         }
 
-        private static bool ValidateSledRentalPolicy(string record)
+        private static bool ValidSledRentalPolicy(string record)
         {
             return Validate(record, SledRentalPolicy);
         }
@@ -78,6 +78,7 @@ namespace day2 {
                         ^ (password[rule.range[1] - 1] == rule.chr);
             return isValid;
         }
+
         private static bool SledRentalPolicy((int[] range, char chr) rule, string password)
         {
             var chars = password.Count(x => x == rule.chr);
