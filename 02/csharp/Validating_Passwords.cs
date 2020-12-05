@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using AoCSharp.Common;
 using NUnit.Framework;
 
 namespace day2 {
@@ -41,13 +42,7 @@ namespace day2 {
         [SetUp]
         public void Initialize_Input()
         {
-            using var inputStream = GetType()
-                .Assembly
-                .GetManifestResourceStream("day2.input.txt");
-            input = new StreamReader(inputStream)
-                .ReadToEnd()
-                .Split(Environment.NewLine)
-                .ToArray();
+            input = Resources.GetResourceLines(this, "day2.input.txt");
         }
 
         private static bool ValidSledRentalPolicy(string record)

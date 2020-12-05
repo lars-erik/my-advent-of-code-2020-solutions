@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using static System.Convert;
 using static System.Environment;
+using static AoCSharp.Common.Resources;
 
 namespace day4
 {
@@ -96,13 +98,7 @@ namespace day4
         [SetUp]
         public void Initialize_Input()
         {
-            using var inputStream = GetType()
-                .Assembly
-                .GetManifestResourceStream($"day4.{TestContext.CurrentContext.Test.Arguments[0]}.txt");
-            input = new StreamReader(inputStream)
-                .ReadToEnd()
-                .Split(NewLine + NewLine)
-                .ToArray();
+            input = GetResourceLines(this, $"day4.{TestContext.CurrentContext.Test.Arguments[0]}.txt", NewLine + NewLine);
         }
     }
 }

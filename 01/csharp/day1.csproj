@@ -17,4 +17,8 @@
     <EmbeddedResource Include="input.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\AoCSharp.Common\AoCSharp.Common.csproj" />
+  </ItemGroup>
+
 </Project>

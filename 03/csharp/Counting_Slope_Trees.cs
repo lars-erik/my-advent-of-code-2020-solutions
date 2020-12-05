@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using AoCSharp.Common;
 using NUnit.Framework;
 
 namespace day3
@@ -55,13 +56,7 @@ namespace day3
         [SetUp]
         public void Initialize_Input()
         {
-            using var inputStream = GetType()
-                .Assembly
-                .GetManifestResourceStream($"day3.{TestContext.CurrentContext.Test.Arguments[0]}.txt");
-            input = new StreamReader(inputStream)
-                .ReadToEnd()
-                .Split(Environment.NewLine)
-                .ToArray();
+            input = Resources.GetResourceLines(this, $"day3.{TestContext.CurrentContext.Test.Arguments[0]}.txt");
         }
     }
 }
