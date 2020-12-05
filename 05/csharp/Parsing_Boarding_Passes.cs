@@ -30,6 +30,21 @@ namespace day5
             Assert.That(maxSeat, Is.EqualTo(0));
         }
 
+        [Test]
+        public void Finds_Last_Free_Seat()
+        {
+            var ordered = input
+                .Select(SeatNumber)
+                .OrderBy(x => x)
+                .ToArray();
+
+            var seat = ordered
+                .Where((x, i) => ordered[i + 1] > x + 1)
+                .First() + 1;
+
+            Assert.That(seat, Is.EqualTo(5));
+        }
+
         private static int SeatNumber(string boardingpass)
         {
             var row = FindPosition(boardingpass.Substring(0, 7), 'F');
