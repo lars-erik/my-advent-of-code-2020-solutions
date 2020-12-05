@@ -1,8 +1,8 @@
 using System;
-using System.IO;
 using System.Linq;
 using AoCSharp.Common;
 using NUnit.Framework;
+using static System.Convert;
 
 namespace day1
 {
@@ -14,7 +14,7 @@ namespace day1
         public void Initialize_Input()
         {
             input = Resources.GetResourceLines(this, "day1.input.txt")
-                .Select(x => Convert.ToInt32(x))
+                .Select(x => ToInt32(x))
                 .ToArray();
         }
 
@@ -79,15 +79,17 @@ namespace day1
         [Test]
         public void Need_Product_Of_2020_Triplets_Loop()
         {
-            Func<int> findTriplet = () => {
-                foreach(var x in input)
-                    foreach(var y in input)
-                        foreach(var z in input)
-                            if (x + y + z == 2020)
-                                return x * y * z;
+            int FindTriplet()
+            {
+                foreach (var x in input)
+                foreach (var y in input)
+                foreach (var z in input)
+                    if (x + y + z == 2020)
+                        return x * y * z;
                 return -1;
-            };
-            var output = findTriplet();
+            }
+
+            var output = FindTriplet();
             
             Assert.That(output, Is.EqualTo(244300320));
         }
