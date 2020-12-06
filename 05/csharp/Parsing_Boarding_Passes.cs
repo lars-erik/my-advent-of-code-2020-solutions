@@ -27,7 +27,7 @@ namespace day5
                 .Select(SeatNumber)
                 .Max();
 
-            Assert.That(maxSeat, Is.EqualTo(0));
+            Assert.That(maxSeat, Is.EqualTo(864));
         }
 
         [Test]
@@ -42,28 +42,29 @@ namespace day5
                 .Where((x, i) => ordered[i + 1] > x + 1)
                 .First() + 1;
 
-            Assert.That(seat, Is.EqualTo(5));
+            Assert.That(seat, Is.EqualTo(739));
         }
 
         private static int SeatNumber(string boardingpass)
         {
-            var row = FindPosition(boardingpass.Substring(0, 7), 'F');
-            var column = FindPosition(boardingpass.Substring(7, 3), 'L');
+            var row = FindPosition(boardingpass.Substring(0, 7));
+            var column = FindPosition(boardingpass.Substring(7, 3));
             var seat = row * 8 + column;
             return seat;
         }
 
-        private static int FindPosition(string instructions, char lower)
+        private static int FindPosition(string instructions)
         {
             var length = instructions.Length;
             var size = (int)Math.Pow(2, length);
             var range = (l: 0, u: size);
-            for (int i = 0; i < length; i++, size /= 2)
+            for (var i = 0; i < length; i++)
             {
+                var slice = (int)Math.Pow(2, i + 1);
                 range = instructions[i] switch
                 {
-                    'F' or 'L' => (range.l, range.u - size / 2),
-                    _ => (range.l + size / 2, range.u)
+                    'F' or 'L' => (range.l, range.u - size / slice),
+                    _ => (range.l + size / slice, range.u)
                 };
             }
             return range.l;
