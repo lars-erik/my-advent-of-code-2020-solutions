@@ -208,7 +208,7 @@ namespace csharp
 
         private ParseResult ContentRule(int i, Token[] rest)
         {
-            if (rest[i] is Literal lit && lit.Value == "no")
+            if (rest[i] is Literal {Value: "no"})
             {
                 return new ParseResult(rest.Length, new ContentRule(0, null));
             }
