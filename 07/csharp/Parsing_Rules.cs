@@ -25,7 +25,7 @@ namespace csharp
             var input = Resources.GetResourceLines(this, "day7.sample.txt");
 
             var rawRules = input.Skip(7).Take(1).ToArray();
-            var rules = DirtyParseRules(rawRules);
+            var rules = ParseRules(rawRules);
 
             Approvals.VerifyJson(SerializeObject(rules));
         }
@@ -34,7 +34,7 @@ namespace csharp
         public void Parses_Sets_Of_Rules()
         {
             var input = Resources.GetResourceLines(this, "day7.sample.txt");
-            var rules = DirtyParseRules(input);
+            var rules = ParseRules(input);
 
             Approvals.VerifyJson(SerializeObject(rules));
         }
@@ -46,7 +46,7 @@ namespace csharp
         public void Counts_Mandatory_Bags(string inputFile, int expected)
         {
             var input = Resources.GetResourceLines(this, $"day7.{inputFile}.txt");
-            var rules = DirtyParseRules(input).OfType<BagRule>().ToDictionary(x => x.Container.Color, x => x.Contents);
+            var rules = ParseRules(input).ToDictionary(x => x.Container.Color, x => x.Contents);
 
             const string omniContainer = "shiny gold";
             var container = rules[omniContainer];
@@ -56,39 +56,37 @@ namespace csharp
         }
 
         [Test]
-        public void DirtyParses_Rules()
+        public void Parses_Rules()
         {
             var input = Resources.GetResourceLines(this, "day7.sample.txt");
 
-            var parser = new DirtyParser(input);
+            var parser = new SimpleParser(input);
             var rules = parser.Parse();
 
             Approvals.VerifyJson(SerializeObject(rules));
         }
 
-
-
-        private static List<Node> DirtyParseRules(string[] rawRules)
+        private static List<BagRule> ParseRules(string[] rawRules)
         {
-            return new DirtyParser(rawRules).Parse();
+            return new SimpleParser(rawRules).Parse();
         }
     }
 
-    public class DirtyParser
+    public class SimpleParser
     {
         private readonly string[] input;
 
-        public DirtyParser(string[] input)
+        public SimpleParser(string[] input)
         {
             this.input = input;
         }
 
-        public List<Node> Parse()
+        public List<BagRule> Parse()
         {
             return input.Select(Parse).ToList();
         }
 
-        private Node Parse(string ruleText)
+        private BagRule Parse(string ruleText)
         {
             var ruleParts = ruleText.Split("contain");
             var bagPart = ruleParts[0].Split(' ', RemoveEmptyEntries);
@@ -111,11 +109,9 @@ namespace csharp
         }
     }
 
-
-    public record Node();
-    public record Bag(string Color) : Node;
-    public record ContentRule(int Amount, Bag Bag) : Node;
-    public record ContentSet(ContentRule[] Rules) : Node
+    public record Bag(string Color);
+    public record ContentRule(int Amount, Bag Bag);
+    public record ContentSet(ContentRule[] Rules)
     {
         public int CalculateBagCount(Dictionary<string, ContentSet> rules)
         {
@@ -128,6 +124,5 @@ namespace csharp
         }
     }
 
-    public record BagRule(Bag Container, ContentSet Contents) : Node;
-    public record ErrorNode(int Index, string Message) : Node;
+    public record BagRule(Bag Container, ContentSet Contents);
 }
