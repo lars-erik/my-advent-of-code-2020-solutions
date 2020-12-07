@@ -73,23 +73,6 @@ namespace csharp
             var container = rules[omniContainer];
             var totalContained = container.CalculateBagCount(1, rules);
             
-            
-            //var containers = new (int count, ContentSet contents)[] {(1, rules[omniContainer])};
-            //int rounds = 0;
-            //var totalContained = 0;
-            //while (containers.Length > 0 && rounds++ < 1000)
-            //{
-            //    foreach (var container in containers)
-            //    {
-            //        totalContained += container.contents.Rules.Sum(x => container.count * x.Amount);
-            //    }
-
-            //    containers = containers
-            //        .SelectMany(x => x.contents.Rules.Select(r => (r.Amount, r.Bag.Color)))
-            //        .Select(x => (x.Amount, rules[x.Color]))
-            //        .ToArray();
-            //}
-            
             Assert.That(totalContained, Is.EqualTo(expected));
         }
 
