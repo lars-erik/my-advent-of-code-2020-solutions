@@ -55,17 +55,6 @@ namespace csharp
             Assert.That(totalContained, Is.EqualTo(expected));
         }
 
-        [Test]
-        public void Parses_Rules()
-        {
-            var input = Resources.GetResourceLines(this, "day7.sample.txt");
-
-            var parser = new SimpleParser(input);
-            var rules = parser.Parse();
-
-            Approvals.VerifyJson(SerializeObject(rules));
-        }
-
         private static List<BagRule> ParseRules(string[] rawRules)
         {
             return new SimpleParser(rawRules).Parse();
