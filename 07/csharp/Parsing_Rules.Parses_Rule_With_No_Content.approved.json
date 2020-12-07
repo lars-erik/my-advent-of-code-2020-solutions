@@ -1,8 +1,10 @@
-﻿{
-    "Container": {
-        "Color": "faded blue"
-    },
-    "Contents": {
-        "Rules": []
+﻿[
+    {
+        "Container": {
+            "Color": "faded blue"
+        },
+        "Contents": {
+            "Rules": []
+        }
     }
-}
+]

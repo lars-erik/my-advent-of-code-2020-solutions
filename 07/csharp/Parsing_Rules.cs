@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework.Constraints;
 using static System.String;
+using static System.StringSplitOptions;
 using static Newtonsoft.Json.JsonConvert;
 
 namespace csharp
@@ -45,8 +46,8 @@ namespace csharp
         {
             var input = Resources.GetResourceLines(this, "day7.sample.txt");
 
-            var parser = new Parser(TokenizeRules(input.Skip(7).Take(1).ToArray())[0]);
-            var rules = parser.Parse();
+            var rawRules = input.Skip(7).Take(1).ToArray();
+            var rules = DirtyParseRules(rawRules);
 
             Approvals.VerifyJson(SerializeObject(rules));
         }
@@ -55,7 +56,7 @@ namespace csharp
         public void Parses_Sets_Of_Rules()
         {
             var input = Resources.GetResourceLines(this, "day7.sample.txt");
-            var rules = input.Select(TokenizeRule).Select(ParseRule);
+            var rules = DirtyParseRules(input);
 
             Approvals.VerifyJson(SerializeObject(rules));
         }
@@ -63,17 +64,35 @@ namespace csharp
         [Test]
         [TestCase("sample", 32)]
         [TestCase("anothersample", 126)]
-        [TestCase("input", -1)]
+        [TestCase("input", 14177)]
         public void Counts_Mandatory_Bags(string inputFile, int expected)
         {
             var input = Resources.GetResourceLines(this, $"day7.{inputFile}.txt");
-            var rules = input.Select(TokenizeRule).Select(ParseRule).OfType<BagRule>().ToDictionary(x => x.Container.Color, x => x.Contents);
+            var rules = DirtyParseRules(input).OfType<BagRule>().ToDictionary(x => x.Container.Color, x => x.Contents);
 
             const string omniContainer = "shiny gold";
             var container = rules[omniContainer];
             var totalContained = container.CalculateBagCount(1, rules);
-            
+
             Assert.That(totalContained, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void DirtyParses_Rules()
+        {
+            var input = Resources.GetResourceLines(this, "day7.sample.txt");
+
+            var parser = new DirtyParser(input);
+            var rules = parser.Parse();
+
+            Approvals.VerifyJson(SerializeObject(rules));
+        }
+
+
+
+        private static List<Node> DirtyParseRules(string[] rawRules)
+        {
+            return new DirtyParser(rawRules).Parse();
         }
 
         private static Node ParseRule(List<Token> tokenizedRule)
@@ -89,6 +108,43 @@ namespace csharp
         private static List<Token> TokenizeRule(string x)
         {
             return new Tokenizer(x).Tokenize();
+        }
+    }
+
+    public class DirtyParser
+    {
+        private readonly string[] input;
+
+        public DirtyParser(string[] input)
+        {
+            this.input = input;
+        }
+
+        public List<Node> Parse()
+        {
+            return input.Select(Parse).ToList();
+        }
+
+        private Node Parse(string ruleText)
+        {
+            var ruleParts = ruleText.Split("contain");
+            var bagPart = ruleParts[0].Split(' ', RemoveEmptyEntries);
+            var unparsedContents = ruleParts[1].Split(new[] { ',', '.' }, RemoveEmptyEntries);
+            var bag = new Bag(bagPart[0] + " " + bagPart[1]);
+            var contents = unparsedContents.Select(contentText =>
+            {
+                var contentParts = contentText.Split(' ', RemoveEmptyEntries);
+                if (contentParts[0] == "no")
+                {
+                    return new ContentRule(0, null);
+                }
+
+                return new ContentRule(Convert.ToInt32(contentParts[0]),
+                    new Bag(contentParts[1] + " " + contentParts[2]));
+            })
+            .Where(x => x.Bag != null)
+            .ToArray();
+            return new BagRule(bag, new ContentSet(contents));
         }
     }
 
@@ -187,12 +243,12 @@ namespace csharp
                 {
                     continue;
                 }
-                
+
                 var result = ContentRule(i, rest);
                 if (result.Node is ContentRule contentRule)
                 {
                     if (contentRule.Bag != null)
-                    { 
+                    {
                         rules.Add(result.Node as ContentRule);
                     }
                     i += result.Consumed;
@@ -206,26 +262,26 @@ namespace csharp
             return new ParseResult(rest.Length, new ContentSet(rules.ToArray()));
         }
 
-        private ParseResult ContentRule(int i, Token[] rest)
+        private ParseResult ContentRule(int i, Token[] tokens)
         {
-            if (rest[i] is Literal {Value: "no"})
+            if (tokens[i] is Literal { Value: "no" })
             {
-                return new ParseResult(rest.Length, new ContentRule(0, null));
+                return new ParseResult(tokens.Length, new ContentRule(0, null));
             }
-            
-            var amtResult = rest[i] as Number;
+
+            var amtResult = tokens[i] as Number;
             if (amtResult == null)
             {
-                return new ParseResult(rest.Length, new ErrorNode(i, "Expected amount"));
+                return new ParseResult(tokens.Length, new ErrorNode(i, "Expected amount"));
             }
 
-            var bagResult = Bag(i + 1, rest.Skip(i + 1));
+            var bagResult = Bag(i + 1, tokens.Skip(i + 1));
             if (bagResult.Node is ErrorNode)
             {
-                return new ParseResult(rest.Length, new ErrorNode(i, "Expected bag"));
+                return new ParseResult(tokens.Length, new ErrorNode(i, "Expected bag"));
             }
 
-            return new ParseResult(4, new ContentRule(amtResult.Value, (Bag) bagResult.Node));
+            return new ParseResult(4, new ContentRule(amtResult.Value, (Bag)bagResult.Node));
         }
     }
 
