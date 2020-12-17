@@ -77,7 +77,7 @@ namespace day17
                 coords = nextSet;
             }
             
-            Assert.AreEqual(0, coords.Count);
+            Assert.AreEqual(286, coords.Count);
         }
 
         private string CreateOutput(int turn, HashSet<Coord> coords)
