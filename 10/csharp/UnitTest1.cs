@@ -5,7 +5,7 @@ using AoCSharp.Common;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace csharp
+namespace day16
 {
     public class Tests
     {

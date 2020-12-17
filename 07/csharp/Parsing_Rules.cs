@@ -9,7 +9,7 @@ using NUnit.Framework.Constraints;
 using static System.StringSplitOptions;
 using static Newtonsoft.Json.JsonConvert;
 
-namespace csharp
+namespace day16
 {
     [UseReporter(typeof(VisualStudioReporter))]
     public class Parsing_Rules
